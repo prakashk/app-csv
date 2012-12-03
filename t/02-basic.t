@@ -1,8 +1,8 @@
-#!perl -T
+#!perl
 
 use strict;
 use warnings;
-use Test::More tests => 8;
+use Test::More tests => 9;
 
 use App::CSV;
 use IO::String;
@@ -60,3 +60,10 @@ my $input_with_headers = qq["one","two","three"\n] . $input;
       "1-based, three columns, field ranges");
 }
 
+{
+  my ($ac, $output) = setup($input_with_headers, qw[-L]);   # csv -L
+  $ac->init;
+  $ac->run;
+  is($$output, " 1: one\n 2: two\n 3: three\n",
+     "list headers");
+}

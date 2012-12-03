@@ -98,6 +98,9 @@ while (my($attr, $opts) = each %TextCSVOptions) {
   );
 }
 
+# other options
+hasro list_column_names => (isa => "Bool", cmd_aliases => [qw/list-header list-field-names list-column-names L/]);
+
 sub __aliases {
   my($attr, $short) = @_;
   my @aliases;
@@ -239,9 +242,28 @@ sub init {
   }
 }
 
+sub list_header_fields {
+  my ($self) = @_;
+
+  my $header = $self->_get_line;
+  if ($header and @$header) {
+    my $field_count = scalar @$header;
+    my $field_num_width = length $field_count;
+    my $field_num = 0;
+    for my $field (@$header) {
+      $self->_output_fh->print(sprintf " %*d: %s\n", $field_num_width, ++$field_num, $field);
+    }
+  }
+}
+
 sub run {
   my($self) = @_;
   $self->init;
+
+  if ($self->list_column_names) {
+    $self->list_header_fields;
+    return;
+  }
 
   # L<perlsyn/"modifiers don't take loop labels">
   INPUT: { do {

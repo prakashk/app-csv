@@ -31,6 +31,10 @@ csv - process CSV files from the command line
 
   # Converts the whole report to TSV (tab-separated values).
 
+  csv --list-column-names < report.csv
+
+  # lists fields from the first line prefixed with their sequence numbers
+
 =head1 DESCRIPTION
 
 CSV (comma-separated value) files are the lowest common denominator of
@@ -120,6 +124,16 @@ and both column names and numbers can be mixed together.
 Use tabs instead of commas as the delimiter. When B<csv> has the input or
 output filenames available, this is inferred when they end with C<.tsv>.
 To disable this dwimmery, you may say C<--to_tsv=0> and C<--from_tsv=0>.
+
+=item B<--list-column-names>
+=item B<--list-field-names>
+=item B<--list-header>
+
+Lists the column values from the first line of the input file, each on
+a separate line, prefixed with the field number in sequence.
+
+All other options (or arguments), if any, are ignored when this option
+is specified.
 
 =back
 
