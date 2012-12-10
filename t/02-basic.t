@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 9;
+use Test::More tests => 11;
 
 use App::CSV;
 use IO::String;
@@ -43,7 +43,8 @@ sub setup {
 my $input_with_headers = qq["one","two","three"\n] . $input;
 
 {
-  my ($ac, $output) = setup($input_with_headers, qw[-f three,1]);   # csv -f three,1,two
+  no warnings 'qw';
+  my ($ac, $output) = setup($input_with_headers, qw[-f three,1]);   # csv -f three,1
   $ac->init;
   is_deeply($ac->columns, [2, 0], "column normalization");
   $ac->run;
@@ -60,10 +61,21 @@ my $input_with_headers = qq["one","two","three"\n] . $input;
       "1-based, three columns, field ranges");
 }
 
+my $input_with_tricky_headers = qq["Revenue","Q4 2012","Q1 2013"\n] . $input;
+
 {
-  my ($ac, $output) = setup($input_with_headers, qw[-L]);   # csv -L
+  my ($ac, $output) = setup($input_with_tricky_headers, qq[-f], qq[Q1 2013,1]);   # csv -f "Q1 2013",1
+  $ac->init;
+  is_deeply($ac->columns, [2, 0], "column normalization");
+  $ac->run;
+  is($$output, qq["Q1 2013",Revenue\n3,1\n33,11\n333,111\n],
+      "1-based, two columns, named fields with spaces");
+}
+
+{
+  my ($ac, $output) = setup($input_with_tricky_headers, qw[-L]);   # csv -L
   $ac->init;
   $ac->run;
-  is($$output, " 1: one\n 2: two\n 3: three\n",
+  is($$output, " 1: Revenue\n 2: Q4 2012\n 3: Q1 2013\n",
      "list headers");
 }
