@@ -99,7 +99,7 @@ while (my($attr, $opts) = each %TextCSVOptions) {
 }
 
 # other options
-hasro list_column_names => (isa => "Bool", cmd_aliases => [qw/list-header list-field-names list-column-names L/]);
+hasro list_header => (isa => "Bool", cmd_aliases => [qw/list-header list-field-names list-column-names L/]);
 
 sub __aliases {
   my($attr, $short) = @_;
@@ -239,6 +239,7 @@ sub init {
   }
 }
 
+# list fields from first record, prefixed with the field number.
 sub list_header_fields {
   my ($self) = @_;
 
@@ -257,7 +258,9 @@ sub run {
   my($self) = @_;
   $self->init;
 
-  if ($self->list_column_names) {
+  # if -L option is specified, just show the column names
+  # (from first record) and return.
+  if ($self->list_header) {
     $self->list_header_fields;
     return;
   }
